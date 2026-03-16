@@ -1,3 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.db
+Readly.db
+
 # Logs
 logs
 *.log
