@@ -9,9 +9,12 @@ Base = declarative_base()
 
 class User(Base):
     __tablename__ = "users"
+
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True)
     password = Column(String)
+    
     books = relationship("UserBook", back_populates="user")
 
 class UserBook(Base):
@@ -22,6 +25,7 @@ class UserBook(Base):
     author = Column(String)
     cover_id = Column(String, nullable=True)
     rating = Column(Integer, default=0)
+    
     user = relationship("User", back_populates="books")
 
 def init_db():

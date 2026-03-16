@@ -1,6 +1,8 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { LoginView } from "./views/LoginView";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { TopBar } from "./components/layouts/TopBar/TopBar";
+import { AuthLayout } from "./views/AuthLayout/AuthLayout";
+import { RegisterPage } from "./views/RegisterPage";
+import { LoginPage } from "./views/LoginPage";
 
 export default function App() {
   return (
@@ -11,9 +13,12 @@ export default function App() {
         </div>
         <main>
           <Routes>
-            <Route path="/login" element={<LoginView />} />
-            <Route path="/register" element={<div>Register</div>} />
-            <Route path="/" element={<LoginView />} />
+            <Route element={<AuthLayout />}>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+            </Route>
+
+            <Route path="/" element={<Navigate to="/login" />} />
           </Routes>
         </main>
       </div>

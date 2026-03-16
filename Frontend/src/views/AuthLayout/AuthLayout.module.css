@@ -1,0 +1,27 @@
+.formCol {
+  z-index: 2;
+}
+
+.imageCol {
+  background-color: var(--readly-light-gold);
+  z-index: 1;
+}
+
+.contentInner {
+  max-width: 420px;
+  display: grid;
+}
+
+.imageInner {
+  display: grid;
+  place-items: center;
+}
+
+.stackItem {
+  grid-area: 1 / 1 / 2 / 2;
+}
+
+.illustration {
+  max-height: 80%;
+  filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.05));
+}

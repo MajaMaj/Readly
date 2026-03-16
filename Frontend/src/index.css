@@ -5,21 +5,29 @@
   --readly-light-gold: #faf3e0;
 }
 
-.form-control-gold:focus {
-  border-color: var(--readly-gold) !important;
-  box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25) !important;
-}
-
-.text-gold {
-  color: var(--readly-gold) !important;
-}
-
-.text-gold:hover {
-  color: var(--readly-gold-hover) !important;
+.btn:disabled {
+  opacity: 0.55 !important;
+  filter: saturate(0.7) !important;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .btn-primary {
   background-color: var(--readly-green) !important;
   border-color: var(--readly-green) !important;
   color: #ffffff !important;
+}
+
+.form-control-gold:focus {
+  border-color: var(--readly-gold) !important;
+  box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25) !important;
+}
+
+.textGold {
+  color: var(--readly-gold) !important;
+  transition: color 0.2s ease-in-out;
+}
+
+.textGold:hover {
+  color: var(--readly-gold-hover) !important;
 }
