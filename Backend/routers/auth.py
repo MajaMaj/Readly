@@ -31,11 +31,13 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
 @router.post("/login")
 def login(user: schemas.UserAuth, db: Session = Depends(get_db)):
     db_user = db.query(database.User).filter(
-        or_(database.User.username == user.identifier, database.User.email == user.identifier),
-        database.User.password == user.password
+        or_(database.User.username == user.identifier, database.User.email == user.identifier)
     ).first()
     
     if not db_user: 
-        raise HTTPException(status_code=400, detail="Invalid credentials")
+        raise HTTPException(status_code=404, detail="Account not found")
+        
+    if db_user.password != user.password:
+        raise HTTPException(status_code=400, detail="Incorrect password")
         
     return {"id": db_user.id, "username": db_user.username}

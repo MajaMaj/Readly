@@ -1,7 +1,10 @@
 import { useNavigate } from "react-router-dom";
+import { useLoginPage } from "../hooks/useLoginPage";
 
 export const LoginPage = () => {
   const navigate = useNavigate();
+  const { formData, error, isLoading, handleChange, handleSubmit } =
+    useLoginPage();
 
   return (
     <>
@@ -17,23 +20,44 @@ export const LoginPage = () => {
         </p>
       </div>
 
-      <form>
+      <form onSubmit={handleSubmit}>
+        <div
+          className="mb-3"
+          style={{ minHeight: "37px", marginTop: "-2.5rem" }}
+        >
+          {error && (
+            <div
+              className="alert alert-danger py-2 small border-0 m-0"
+              style={{ borderRadius: "12px" }}
+            >
+              {error}
+            </div>
+          )}
+        </div>
+
         <div className="mb-4">
           <input
+            name="identifier"
             type="text"
             className="form-control form-control-lg bg-light border-0 py-3"
             placeholder="Username or Email"
-            style={{ borderRadius: "12px" }}
+            style={{ borderRadius: "12px", fontSize: "0.95rem" }}
+            value={formData.identifier}
+            onChange={handleChange}
           />
         </div>
         <div className="mb-3">
           <input
+            name="password"
             type="password"
             className="form-control form-control-lg bg-light border-0 py-3"
             placeholder="Password"
-            style={{ borderRadius: "12px" }}
+            style={{ borderRadius: "12px", fontSize: "0.95rem" }}
+            value={formData.password}
+            onChange={handleChange}
           />
         </div>
+
         <div className="mb-5 text-end">
           <button
             type="button"
@@ -43,13 +67,16 @@ export const LoginPage = () => {
             Forgot password?
           </button>
         </div>
+
         <button
-          type="button"
+          type="submit"
+          disabled={isLoading}
           className="btn btn-lg w-100 fw-bold py-3 mb-4 text-white btn-primary shadow-sm"
           style={{ borderRadius: "12px" }}
         >
           SIGN IN
         </button>
+
         <p className="text-center text-muted small mb-0">
           New to the club?{" "}
           <button
