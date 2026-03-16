@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 
 const API_URL = "http://localhost:8000/api";
 
@@ -20,30 +20,35 @@ export interface ApiError {
 
 export const authService = {
   register: async (data: RegisterData) => {
-    try {
-      const response = await axios.post(`${API_URL}/register`, data);
-      return response.data;
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const serverError = err as AxiosError<ApiError>;
-        throw new Error(
-          serverError.response?.data?.detail || "Registration failed"
-        );
-      }
-      throw new Error("An unexpected error occurred");
-    }
+    const response = await axios.post(`${API_URL}/register`, data);
+    return response.data;
   },
 
   login: async (data: LoginData) => {
+    const response = await axios.post(`${API_URL}/login`, data);
+    return response.data;
+  },
+
+  forgotPassword: async (email: string) => {
     try {
-      const response = await axios.post(`${API_URL}/login`, data);
+      const response = await axios.post(`${API_URL}/forgot-password`, {
+        email,
+      });
       return response.data;
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        const serverError = err as AxiosError<ApiError>;
-        throw new Error(serverError.response?.data?.detail || "Login failed");
+        throw new Error(err.response?.data?.detail || "Something went wrong");
       }
-      throw new Error("An unexpected error occurred");
+      throw new Error("Network error");
     }
+  },
+
+  resetPasswordConfirm: async (token: string, password: string) => {
+    const response = await axios.post(
+      `${API_URL}/reset-password-confirm`,
+      { password },
+      { params: { token } }
+    );
+    return response.data;
   },
 };

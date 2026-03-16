@@ -9,11 +9,8 @@ export const RegisterPage = () => {
   return (
     <>
       <div className="mb-5">
-        <h1
-          className="display-5 fw-bold mb-3"
-          style={{ color: "var(--readly-green)" }}
-        >
-          Join the club<span style={{ color: "var(--readly-gold)" }}>.</span>
+        <h1 className="display-5 fw-bold mb-3 text-primary">
+          Join the club<span className="text-secondary">.</span>
         </h1>
         <p className="text-muted fs-5 lh-sm">
           Create your bookshelf and start tracking your reading journey today.
@@ -22,7 +19,7 @@ export const RegisterPage = () => {
 
       <form onSubmit={handleSubmit}>
         <div
-          className="mb-3"
+          className="mb-2"
           style={{ minHeight: "37px", marginTop: "-2.5rem" }}
         >
           {error && (

@@ -19,7 +19,7 @@ export const TopBar = () => {
       className={`
       ${styles.navbar} 
       ${scrolled ? styles.scrolled : ""} 
-      navbar sticky-top 
+      navbar sticky-top px-2
     `}
     >
       <div className="container">

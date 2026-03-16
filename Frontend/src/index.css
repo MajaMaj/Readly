@@ -23,11 +23,10 @@
   box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25) !important;
 }
 
-.textGold {
-  color: var(--readly-gold) !important;
-  transition: color 0.2s ease-in-out;
+.text-primary {
+  color: var(--readly-green) !important;
 }
 
-.textGold:hover {
-  color: var(--readly-gold-hover) !important;
+.text-secondary {
+  color: var(--readly-gold) !important;
 }

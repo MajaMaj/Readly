@@ -9,10 +9,7 @@ export const LoginPage = () => {
   return (
     <>
       <div className="mb-5">
-        <h1
-          className="display-5 fw-bold mb-3"
-          style={{ color: "var(--readly-green)" }}
-        >
+        <h1 className="display-5 fw-bold mb-3 text-primary">
           Welcome back<span style={{ color: "var(--readly-gold)" }}>.</span>
         </h1>
         <p className="text-muted fs-5 lh-sm">
@@ -22,7 +19,7 @@ export const LoginPage = () => {
 
       <form onSubmit={handleSubmit}>
         <div
-          className="mb-3"
+          className="mb-2"
           style={{ minHeight: "37px", marginTop: "-2.5rem" }}
         >
           {error && (
@@ -63,6 +60,7 @@ export const LoginPage = () => {
             type="button"
             className="btn btn-link p-0 text-decoration-none fw-bold"
             style={{ color: "var(--readly-gold)", fontSize: "0.85rem" }}
+            onClick={() => navigate("/forgot-password")}
           >
             Forgot password?
           </button>
