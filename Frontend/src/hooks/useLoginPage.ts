@@ -11,7 +11,6 @@ export const useLoginPage = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Automatyczne wylogowanie przy wejściu na stronę logowania
   useEffect(() => {
     sessionStorage.removeItem("user");
   }, []);
@@ -33,7 +32,7 @@ export const useLoginPage = () => {
     try {
       const response = await authService.login(formData);
       sessionStorage.setItem("user", JSON.stringify(response));
-      navigate("/dashboard");
+      navigate("/dashboard/discover");
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);

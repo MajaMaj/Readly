@@ -1,14 +1,41 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap");
+
 .navbar {
   transition: all 0.3s ease-in-out;
+  z-index: 2000;
+  font-family: "Inter", sans-serif;
+  border-bottom: 1px solid transparent;
 }
 
 .scrolled {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  background-color: var(--readly-light-gold);
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.navLink {
+  font-size: 0.8rem;
+  color: #333 !important;
+  transition: all 0.2s ease;
+}
+
+.navLink:not(.activeGold):hover {
+  background-color: rgba(0, 0, 0, 0.03);
+  color: #000 !important;
+}
+
+.activeGold {
+  background-color: #c19a6b !important;
+  color: white !important;
 }
 
 .logo {
-  height: 50px;
+  height: 45px;
   width: auto;
-  display: block;
+}
+
+@media (max-width: 991px) {
+  .pillContainer {
+    scale: 0.85;
+  }
 }

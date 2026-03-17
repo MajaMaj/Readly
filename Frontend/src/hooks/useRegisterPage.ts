@@ -38,8 +38,13 @@ export const useRegisterPage = () => {
 
     setIsLoading(true);
     try {
-      await authService.register(formData);
-      navigate("/login");
+      const response = await authService.register(formData);
+
+      sessionStorage.clear();
+
+      sessionStorage.setItem("user", JSON.stringify(response));
+
+      navigate("/dashboard/discover");
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -49,11 +54,5 @@ export const useRegisterPage = () => {
     }
   };
 
-  return {
-    formData,
-    error,
-    isLoading,
-    handleChange,
-    handleSubmit,
-  };
+  return { formData, error, isLoading, handleChange, handleSubmit };
 };

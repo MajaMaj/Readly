@@ -1,48 +1,70 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+} from "react-router-dom";
 import { TopBar } from "./components/layouts/TopBar/TopBar";
+import { MainLayout } from "./components/layouts/MainLayout";
+import { ProtectedRoute } from "./guards/ProtectedRoute";
 import { AuthLayout } from "./views/AuthLayout/AuthLayout";
-import { RegisterPage } from "./views/RegisterPage";
+
 import { LoginPage } from "./views/LoginPage";
+import { RegisterPage } from "./views/RegisterPage";
 import { ForgotPasswordPage } from "./views/ForgotPasswordPage";
 import { ForgotPasswordSuccessPage } from "./views/ForgotPasswordSuccessPage";
 import { ResetPasswordPage } from "./views/ResetPasswordPage";
 import { ResetPasswordSuccessPage } from "./views/ResetPasswordSuccessPage";
-import { Dashboard } from "./views/Dashboard";
-import { ProtectedRoute } from "./guards/ProtectedRoute";
-import { PublicRoute } from "./guards/PublicRoute";
+
+import { DiscoverPage } from "./views/DiscoverPage";
+import { ShelvesPage } from "./views/ShelvesPage";
+import { ReviewsPage } from "./views/ReviewsPage";
 
 export default function App() {
   return (
     <BrowserRouter>
-      <TopBar />
-      <main>
-        <Routes>
+      <Routes>
+        <Route
+          element={
+            <>
+              <TopBar showNav={false} />
+              <main>
+                <Outlet />
+              </main>
+            </>
+          }
+        >
           <Route element={<AuthLayout />}>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
           </Route>
 
-          <Route element={<PublicRoute />}>
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route
-              path="/reset-password-success"
-              element={<ForgotPasswordSuccessPage />}
-            />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route
-              path="/password-changed-success"
-              element={<ResetPasswordSuccessPage />}
-            />
-          </Route>
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route
+            path="/reset-password-success"
+            element={<ForgotPasswordSuccessPage />}
+          />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route
+            path="/password-changed-success"
+            element={<ResetPasswordSuccessPage />}
+          />
+        </Route>
 
-          <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<Dashboard />} />
+        <Route element={<ProtectedRoute />}>
+          <Route element={<MainLayout />}>
+            <Route path="/dashboard/discover" element={<DiscoverPage />} />
+            <Route path="/dashboard/shelves" element={<ShelvesPage />} />
+            <Route path="/dashboard/reviews" element={<ReviewsPage />} />
+            <Route path="/profile" element={<div>Profile Page</div>} />
+            <Route path="/settings" element={<div>Settings Page</div>} />
           </Route>
+        </Route>
 
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </main>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
     </BrowserRouter>
   );
 }
