@@ -23,10 +23,11 @@ export const AuthLayout = () => {
   };
 
   return (
-    <div className="container-fluid min-vh-100 d-flex p-0 overflow-hidden bg-white">
-      <div className="row g-0 w-100 position-relative m-0">
+    // vh-100 zamiast min-vh-100, żeby nic nie wystawało
+    <div className="container-fluid vh-100 d-flex p-0 overflow-hidden bg-white">
+      <div className="row g-0 w-100 h-100 position-relative m-0">
         <motion.div
-          className={`col-lg-6 col-12 d-flex align-items-center justify-content-center p-4 p-lg-5 bg-white min-vh-100 ${styles.formCol}`}
+          className={`col-lg-6 col-12 d-flex align-items-center justify-content-center p-4 p-lg-5 bg-white h-100 ${styles.formCol}`}
           animate={{ x: isMobile ? 0 : isRegister ? "100%" : "0%" }}
           transition={{
             type: "spring",
@@ -34,8 +35,12 @@ export const AuthLayout = () => {
             damping: 20,
             delay: isMobile ? 0 : 0.2,
           }}
+          style={{ position: "relative", zIndex: 2 }}
         >
-          <div className={`w-100 ${styles.contentInner}`}>
+          <div
+            className={`w-100 ${styles.contentInner}`}
+            style={{ maxWidth: "450px" }}
+          >
             <AnimatePresence mode="popLayout" initial={false}>
               <motion.div
                 key={location.pathname}
@@ -52,6 +57,7 @@ export const AuthLayout = () => {
                   transition: transitionConfig.exit,
                 }}
               >
+                {/* Outlet renderuje LoginPage/RegisterPage */}
                 {outlet}
               </motion.div>
             </AnimatePresence>
@@ -59,7 +65,7 @@ export const AuthLayout = () => {
         </motion.div>
 
         <motion.div
-          className={`col-lg-6 d-none d-lg-block ${styles.imageCol}`}
+          className={`col-lg-6 d-none d-lg-block h-100 ${styles.imageCol}`}
           animate={{ x: isRegister ? "-100%" : "0%" }}
           transition={{
             type: "spring",
@@ -68,13 +74,15 @@ export const AuthLayout = () => {
             delay: 0.2,
           }}
         >
-          <div className={`h-100 w-100 p-5 ${styles.imageInner}`}>
+          <div
+            className={`h-100 w-100 p-5 d-flex align-items-center justify-content-center ${styles.imageInner}`}
+          >
             <AnimatePresence mode="popLayout" initial={false}>
               <motion.img
                 key={location.pathname}
                 src={isRegister ? registerImg : loginImg}
                 className={`img-fluid ${styles.illustration} ${styles.stackItem}`}
-                initial={{ opacity: 0, scale: 1 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{
                   opacity: 1,
                   scale: 1,
@@ -82,10 +90,11 @@ export const AuthLayout = () => {
                 }}
                 exit={{
                   opacity: 0,
-                  scale: 1,
+                  scale: 0.95,
                   transition: transitionConfig.exit,
                 }}
                 alt="Illustration"
+                style={{ maxHeight: "80%" }}
               />
             </AnimatePresence>
           </div>

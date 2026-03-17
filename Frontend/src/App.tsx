@@ -7,20 +7,22 @@ import { ForgotPasswordPage } from "./views/ForgotPasswordPage";
 import { ForgotPasswordSuccessPage } from "./views/ForgotPasswordSuccessPage";
 import { ResetPasswordPage } from "./views/ResetPasswordPage";
 import { ResetPasswordSuccessPage } from "./views/ResetPasswordSuccessPage";
+import { Dashboard } from "./views/Dashboard";
+import { ProtectedRoute } from "./guards/ProtectedRoute";
+import { PublicRoute } from "./guards/PublicRoute";
 
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="position-relative">
-        <div className="position-absolute top-0 w-100" style={{ zIndex: 1000 }}>
-          <TopBar />
-        </div>
-        <main>
-          <Routes>
-            <Route element={<AuthLayout />}>
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-            </Route>
+      <TopBar />
+      <main>
+        <Routes>
+          <Route element={<AuthLayout />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+          </Route>
+
+          <Route element={<PublicRoute />}>
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route
               path="/reset-password-success"
@@ -31,11 +33,16 @@ export default function App() {
               path="/password-changed-success"
               element={<ResetPasswordSuccessPage />}
             />
+          </Route>
 
-            <Route path="/" element={<Navigate to="/login" />} />
-          </Routes>
-        </main>
-      </div>
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Route>
+
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </main>
     </BrowserRouter>
   );
 }

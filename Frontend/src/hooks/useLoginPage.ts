@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService, type LoginData } from "../services/auth";
 
@@ -10,6 +10,11 @@ export const useLoginPage = () => {
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Automatyczne wylogowanie przy wejściu na stronę logowania
+  useEffect(() => {
+    sessionStorage.removeItem("user");
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -27,7 +32,7 @@ export const useLoginPage = () => {
     setIsLoading(true);
     try {
       const response = await authService.login(formData);
-      localStorage.setItem("user", JSON.stringify(response));
+      sessionStorage.setItem("user", JSON.stringify(response));
       navigate("/dashboard");
     } catch (err) {
       if (err instanceof Error) {
@@ -38,11 +43,5 @@ export const useLoginPage = () => {
     }
   };
 
-  return {
-    formData,
-    error,
-    isLoading,
-    handleChange,
-    handleSubmit,
-  };
+  return { formData, error, isLoading, handleChange, handleSubmit };
 };

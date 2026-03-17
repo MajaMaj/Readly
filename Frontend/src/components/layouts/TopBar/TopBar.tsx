@@ -7,9 +7,8 @@ export const TopBar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
+      setScrolled(window.scrollY > 20);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -17,10 +16,10 @@ export const TopBar = () => {
   return (
     <nav
       className={`
-      ${styles.navbar} 
-      ${scrolled ? styles.scrolled : ""} 
-      navbar sticky-top px-2
-    `}
+        ${styles.navbar} 
+        ${scrolled ? styles.scrolled : ""} 
+        navbar fixed-top
+      `}
     >
       <div className="container">
         <a className="navbar-brand" href="/">
