@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLoginPage } from "../hooks/useLoginPage";
 
 export const LoginPage = () => {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
   const { formData, error, isLoading, handleChange, handleSubmit } =
     useLoginPage();
 
@@ -43,16 +45,29 @@ export const LoginPage = () => {
             onChange={handleChange}
           />
         </div>
-        <div className="mb-3">
+
+        <div className="mb-3 position-relative">
           <input
             name="password"
-            type="password"
-            className="form-control form-control-lg bg-light border-0 py-3"
+            type={showPassword ? "text" : "password"}
+            className="form-control form-control-lg bg-light border-0 py-3 pe-5"
             placeholder="Password"
             style={{ borderRadius: "12px", fontSize: "0.95rem" }}
             value={formData.password}
             onChange={handleChange}
           />
+          <button
+            type="button"
+            className="btn position-absolute end-0 top-50 translate-middle-y border-0 me-2"
+            onClick={() => setShowPassword(!showPassword)}
+            style={{ zIndex: 10 }}
+          >
+            {showPassword ? (
+              <i className="bi bi-eye-slash text-muted"></i>
+            ) : (
+              <i className="bi bi-eye text-muted"></i>
+            )}
+          </button>
         </div>
 
         <div className="mb-5 text-end">

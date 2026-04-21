@@ -9,17 +9,16 @@ import { TopBar } from "./components/layouts/TopBar/TopBar";
 import { MainLayout } from "./components/layouts/MainLayout";
 import { ProtectedRoute } from "./guards/ProtectedRoute";
 import { AuthLayout } from "./views/AuthLayout/AuthLayout";
-
 import { LoginPage } from "./views/LoginPage";
 import { RegisterPage } from "./views/RegisterPage";
 import { ForgotPasswordPage } from "./views/ForgotPasswordPage";
 import { ForgotPasswordSuccessPage } from "./views/ForgotPasswordSuccessPage";
 import { ResetPasswordPage } from "./views/ResetPasswordPage";
-import { ResetPasswordSuccessPage } from "./views/ResetPasswordSuccessPage";
-
-import { DiscoverPage } from "./views/DiscoverPage";
+import { DiscoverPage } from "./views/DiscoverPage/DiscoverPage";
 import { ShelvesPage } from "./views/ShelvesPage";
 import { ReviewsPage } from "./views/ReviewsPage";
+import { ProfilePage } from "./views/ProfilePage/ProfilePage";
+import { ResetPasswordSuccessPage } from "./views/ResetPasswordSuccessPage";
 
 export default function App() {
   return (
@@ -57,8 +56,7 @@ export default function App() {
             <Route path="/dashboard/discover" element={<DiscoverPage />} />
             <Route path="/dashboard/shelves" element={<ShelvesPage />} />
             <Route path="/dashboard/reviews" element={<ReviewsPage />} />
-            <Route path="/profile" element={<div>Profile Page</div>} />
-            <Route path="/settings" element={<div>Settings Page</div>} />
+            <Route path="/profile" element={<ProfilePage />} />
           </Route>
         </Route>
 

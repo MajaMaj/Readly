@@ -8,7 +8,7 @@ export const ResetPasswordSuccessPage = () => {
       className="container px-4 text-center"
       style={{ maxWidth: "500px", paddingTop: "25vh" }}
     >
-      <h1 className="fw-bold mb-3" style={{ color: "var(--readly-green)" }}>
+      <h1 className="fw-bold mb-3" style={{ color: "var(--readly-primary" }}>
         All set<span style={{ color: "var(--readly-gold)" }}>!</span>
       </h1>
       <p className="text-muted fs-6 mb-5 px-4">

@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useTopBar } from "../../../hooks/useTopBar";
 import styles from "./TopBar.module.css";
 import logo from "/readly-logo.svg";
 
@@ -8,14 +9,24 @@ interface TopBarProps {
 }
 
 export const TopBar = ({ showNav = false }: TopBarProps) => {
-  const [scrolled, setScrolled] = useState(false);
-  const location = useLocation();
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const {
+    scrolled,
+    showDropdown,
+    dropdownRef,
+    pathname,
+    toggleDropdown,
+    closeDropdown,
+    handleLogout,
+  } = useTopBar();
+
+  const handleSearchBlur = () => {
+    if (searchQuery.trim() === "") {
+      setShowSearch(false);
+    }
+  };
 
   const menuItems = [
     { label: "Discover", path: "/dashboard/discover", icon: "bi-compass" },
@@ -29,7 +40,7 @@ export const TopBar = ({ showNav = false }: TopBarProps) => {
 
   return (
     <nav
-      className={`navbar fixed-top py-3 ${styles.navbar} ${scrolled ? styles.scrolled : ""}`}
+      className={`${styles.navbar} ${scrolled ? styles.scrolled : ""} navbar fixed-top py-3`}
     >
       <div className="container d-flex align-items-center justify-content-between position-relative">
         <Link className="navbar-brand p-0 m-0" to="/dashboard/discover">
@@ -37,36 +48,87 @@ export const TopBar = ({ showNav = false }: TopBarProps) => {
         </Link>
 
         {showNav && (
-          <div
-            className={`nav nav-pills p-1 rounded-pill position-absolute top-50 start-50 translate-middle ${styles.pillContainer}`}
-          >
-            {menuItems.map((item) => (
-              <div key={item.path} className="nav-item">
-                <Link
-                  to={item.path}
-                  className={`nav-link d-flex align-items-center gap-2 rounded-pill px-3 py-1 ${styles.navLink} ${
-                    location.pathname === item.path ? styles.activeGold : ""
-                  }`}
-                >
-                  <i
-                    className={`bi ${item.icon} ${location.pathname === item.path ? "text-white" : "text-dark"}`}
-                  ></i>
-                  <span
-                    className={
-                      location.pathname === item.path
-                        ? "fw-bold"
-                        : "fw-semibold"
-                    }
+          <>
+            <div className="nav nav-pills p-1 rounded-pill position-absolute top-50 start-50 translate-middle d-none d-md-flex">
+              {menuItems.map((item) => (
+                <div key={item.path} className="nav-item">
+                  <Link
+                    to={item.path}
+                    className={`nav-link d-flex align-items-center gap-2 rounded-pill px-3 py-1 ${styles.navLink} ${
+                      pathname === item.path ? styles.activeGold : ""
+                    }`}
                   >
-                    {item.label}
-                  </span>
-                </Link>
-              </div>
-            ))}
-          </div>
-        )}
+                    <i className={`bi ${item.icon}`}></i>
+                    <span
+                      className={
+                        pathname === item.path ? "fw-bold" : "fw-semibold"
+                      }
+                    >
+                      {item.label}
+                    </span>
+                  </Link>
+                </div>
+              ))}
+            </div>
 
-        <div style={{ width: "45px" }} className="d-none d-lg-block"></div>
+            <div className="d-flex align-items-center gap-2">
+              <div className="d-flex align-items-center">
+                {showSearch && (
+                  <input
+                    type="text"
+                    className={`form-control border-0 shadow-none rounded-pill ${styles.searchInput}`}
+                    placeholder="Search books..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onBlur={handleSearchBlur}
+                    autoFocus
+                  />
+                )}
+                <button
+                  className={`btn p-0 border-0 shadow-none me-2 d-flex align-items-center justify-content-center ${styles.searchBtn}`}
+                  onClick={() => setShowSearch(!showSearch)}
+                >
+                  <i className="bi bi-search fs-5"></i>
+                </button>
+              </div>
+
+              <div className="dropdown" ref={dropdownRef}>
+                <div
+                  className={`${styles.userAvatar} dropdown-toggle border-0 d-flex align-items-center justify-content-center`}
+                  onClick={toggleDropdown}
+                  role="button"
+                >
+                  <i className="bi bi-person-fill"></i>
+                </div>
+
+                <ul
+                  className={`dropdown-menu dropdown-menu-end shadow border-0 p-2 ${showDropdown ? "show" : ""} ${styles.customDropdown}`}
+                >
+                  <li>
+                    <Link
+                      to="/profile"
+                      className="dropdown-item py-2 d-flex align-items-center"
+                      onClick={closeDropdown}
+                    >
+                      <i className="bi bi-person me-2 fs-5"></i> Profile
+                    </Link>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider opacity-50" />
+                  </li>
+                  <li>
+                    <button
+                      className="dropdown-item py-2 text-danger d-flex align-items-center"
+                      onClick={handleLogout}
+                    >
+                      <i className="bi bi-box-arrow-right me-2 fs-5"></i> Logout
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </nav>
   );

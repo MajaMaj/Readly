@@ -1,22 +1,7 @@
 import axios, { AxiosError } from "axios";
+import type { ApiError, LoginData, RegisterData } from "../types";
 
 const API_URL = "http://localhost:8000/api";
-
-export interface RegisterData {
-  username: string;
-  email: string;
-  password?: string;
-  confirmPassword?: string;
-}
-
-export interface LoginData {
-  identifier: string;
-  password?: string;
-}
-
-export interface ApiError {
-  detail: string;
-}
 
 export const authService = {
   register: async (data: RegisterData) => {

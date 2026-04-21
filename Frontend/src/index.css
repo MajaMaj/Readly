@@ -1,8 +1,9 @@
 :root {
-  --readly-green: #006d44;
-  --readly-gold: #d4af37;
+  --readly-primary: #006d44;
+  --readly-gold: #e3ae00;
   --readly-gold-hover: #b8860b;
   --readly-light-gold: #faf3e0;
+  --readly-cream: #fff1dd;
 }
 
 .btn:disabled {
@@ -13,8 +14,8 @@
 }
 
 .btn-primary {
-  background-color: var(--readly-green) !important;
-  border-color: var(--readly-green) !important;
+  background-color: var(--readly-primary) !important;
+  border-color: var(--readly-primary) !important;
   color: #ffffff !important;
 }
 
@@ -24,7 +25,7 @@
 }
 
 .text-primary {
-  color: var(--readly-green) !important;
+  color: var(--readly-primary) !important;
 }
 
 .text-secondary {

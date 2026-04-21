@@ -1,41 +1,126 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap");
-
 .navbar {
-  transition: all 0.3s ease-in-out;
-  z-index: 2000;
-  font-family: "Inter", sans-serif;
-  border-bottom: 1px solid transparent;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1050;
+  transition: all 0.3s ease;
+  background-color: transparent;
 }
 
 .scrolled {
-  background-color: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+}
+
+.logo {
+  height: 50px;
 }
 
 .navLink {
-  font-size: 0.8rem;
-  color: #333 !important;
+  color: black !important;
+  font-size: 0.9rem;
+  font-weight: 500;
   transition: all 0.2s ease;
 }
 
 .navLink:not(.activeGold):hover {
-  background-color: rgba(0, 0, 0, 0.03);
-  color: #000 !important;
+  color: var(--readly-gold) !important;
 }
 
 .activeGold {
-  background-color: #c19a6b !important;
+  background-color: var(--readly-gold) !important;
   color: white !important;
 }
 
-.logo {
-  height: 45px;
-  width: auto;
+.userAvatar {
+  width: 40px;
+  height: 40px;
+  background-color: var(--readly-gold);
+  border-radius: 50%;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
 }
 
-@media (max-width: 991px) {
-  .pillContainer {
-    scale: 0.85;
+.userAvatar:hover {
+  transform: scale(1.05);
+}
+
+.userAvatar::after {
+  display: none !important;
+}
+
+.customDropdown {
+  margin-top: 12px !important;
+  margin-left: -120px !important;
+  border-radius: 12px;
+  min-width: 190px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.searchInput {
+  padding: 0 1.2rem;
+  height: 36px;
+  width: 220px;
+  background-color: var(--readly-cream) !important;
+  font-size: 0.9rem;
+  animation: expand 0.3s forwards ease-out;
+}
+
+.searchBtn {
+  color: #333;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.searchBtn:hover {
+  color: var(--readly-gold);
+}
+
+@keyframes expand {
+  from {
+    width: 0;
+    opacity: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  to {
+    width: 220px;
+    opacity: 1;
+    padding-left: 1.2rem;
+    padding-right: 1.2rem;
+  }
+}
+
+:global(.dropdown-item) {
+  border-radius: 8px;
+  font-weight: 500;
+  color: #444;
+  transition: all 0.2s;
+}
+
+:global(.dropdown-item):hover {
+  color: var(--readly-gold) !important;
+  background-color: #f8f9fa;
+}
+
+:global(.dropdown-item:active) {
+  background-color: var(--readly-gold) !important;
+  color: white !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

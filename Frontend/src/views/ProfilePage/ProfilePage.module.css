@@ -1,0 +1,46 @@
+.profilePage {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.customToast {
+  background: white;
+  min-width: 300px;
+}
+
+.successAccent {
+  border-left: 5px solid #198754;
+}
+
+.dangerAccent {
+  border-left: 5px solid #dc3545;
+}
+
+.iconWrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatarEditBtn {
+  width: 40px;
+  height: 40px;
+  transition: transform 0.2s;
+  cursor: pointer;
+  background-color: var(--readly-gold) !important;
+}
+
+.avatarEditBtn:hover {
+  transform: scale(1.1);
+}
+
+.ls-1 {
+  letter-spacing: 1px;
+}

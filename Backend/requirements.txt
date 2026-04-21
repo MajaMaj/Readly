@@ -6,3 +6,4 @@ httpx
 pydantic[email]
 pyjwt
 fastapi-mail
+python-multipart

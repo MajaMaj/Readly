@@ -1,9 +1,15 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import database
-from routers import auth, books
+from routers.auth import router as auth_router
+from routers.books import router as books_router
+from routers.users import router as users_router
+import os
 
-app = FastAPI(title="Readly API")
+os.makedirs("static/profiles", exist_ok=True)
+
+app = FastAPI()
 
 database.init_db()
 
@@ -15,9 +21,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth.router)
-app.include_router(books.router)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-@app.get("/health")
-def health_check():
-    return {"status": "ok"}
+app.include_router(auth_router)
+app.include_router(books_router)
+app.include_router(users_router)
