@@ -7,6 +7,7 @@ engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
+
 class User(Base):
     __tablename__ = "users"
 
@@ -14,6 +15,8 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
     password = Column(String)
+    profile_image = Column(String, nullable=True)
+    description = Column(String, nullable=True)
     
     books = relationship("UserBook", back_populates="user")
 

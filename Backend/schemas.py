@@ -29,21 +29,15 @@ class BookSave(BookBase):
 
 class Book(BookBase):
     id: int
-    
     model_config = ConfigDict(from_attributes=True)
+
 class User(BaseModel):
     id: int
     username: str
     email: str
     profile_image: Optional[str] = None
     description: Optional[str] = None
-
-    class Config:
-        from_attributes = True
-
-class ProfileUpdate(BaseModel):
-    description: Optional[str] = None
-    password: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True)
 
 class ProfileUpdate(BaseModel):
     description: Optional[str] = None

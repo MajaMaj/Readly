@@ -65,7 +65,7 @@ export const ProfilePage = () => {
     setStatus({ msg: "", type: "" });
     try {
       await userService.updateProfile({
-        description,
+        description: description,
         password: passwords.new || undefined,
       });
       setUser((prev) => (prev ? { ...prev, description } : null));
@@ -158,14 +158,6 @@ export const ProfilePage = () => {
           </div>
           <h2 className="fw-bold mb-1">{user.username}</h2>
           <p className="small mb-2 text-muted">{user.email}</p>
-          {user.description && (
-            <p
-              className="fst-italic text-secondary mb-0"
-              style={{ maxWidth: "400px" }}
-            >
-              "{user.description}"
-            </p>
-          )}
         </div>
 
         <div className="container px-5 pb-5">
@@ -182,7 +174,7 @@ export const ProfilePage = () => {
           <FormTextarea
             label="About Me"
             value={description}
-            onChange={setDescription}
+            onChange={(value: string) => setDescription(value)}
             maxLength={250}
             placeholder="Tell others about your reading journey..."
           />
@@ -223,14 +215,7 @@ export const ProfilePage = () => {
               onClick={handleUpdate}
               disabled={updating}
             >
-              {updating && (
-                <span
-                  className="spinner-border spinner-border-sm me-2"
-                  role="status"
-                  aria-hidden="true"
-                ></span>
-              )}
-              {updating ? "Updating..." : "Save Changes"}
+              Save Changes
             </button>
           </div>
         </div>
