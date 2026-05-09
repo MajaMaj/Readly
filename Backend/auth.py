@@ -3,7 +3,6 @@ from fastapi.security import OAuth2PasswordBearer
 import jwt
 from datetime import datetime, timezone
 
-# Musi być identyczny z kluczem w routers/auth.py
 SECRET_KEY = "readly_secure_key_for_jwt_tokens_2026_fixed"
 ALGORITHM = "HS256"
 

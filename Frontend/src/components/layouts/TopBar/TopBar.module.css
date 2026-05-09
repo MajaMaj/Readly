@@ -124,3 +124,32 @@
     transform: translateY(0);
   }
 }
+
+.searchSuggestions {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 300px;
+  background: white;
+  border-radius: 20px !important;
+  z-index: 1000;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.searchInput {
+  width: 250px;
+  background: rgba(255, 255, 255, 0.9);
+  padding-left: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .searchSuggestions {
+    width: 250px;
+    position: fixed;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}

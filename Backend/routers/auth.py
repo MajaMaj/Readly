@@ -42,7 +42,6 @@ def login(user: schemas.UserAuth, db: Session = Depends(get_db)):
     if not db_user or db_user.password != user.password:
         raise HTTPException(status_code=400, detail="Incorrect identifier or password")
 
-    # TWORZENIE TOKENA DLA ZALOGOWANEGO UŻYTKOWNIKA
     access_token_expires = timedelta(minutes=60)
     expire = datetime.now(timezone.utc) + access_token_expires
     to_encode = {"sub": str(db_user.id), "exp": expire}

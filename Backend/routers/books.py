@@ -1,9 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 import database, schemas
 from database import get_db
 
 router = APIRouter(prefix="/api/books", tags=["Books"])
+
+@router.get("/user/{user_id}/reviews", response_model=list[schemas.Review])
+def get_user_reviews(user_id: str, db: Session = Depends(get_db)):
+    return db.query(database.Review).filter(database.Review.user_id == user_id).all()
 
 @router.get("/{book_id}/reviews", response_model=list[schemas.Review])
 def get_reviews(book_id: str, db: Session = Depends(get_db)):
@@ -28,8 +33,3 @@ def update_review(review_id: int, review_update: schemas.ReviewUpdate, db: Sessi
     db.commit()
     db.refresh(db_review)
     return db_review
-
-@router.get("/user/{user_id}/reviews", response_model=list[schemas.Review])
-def get_user_reviews(user_id: str, db: Session = Depends(get_db)):
-    return db.query(database.Review).filter(database.Review.user_id == user_id).all()
-

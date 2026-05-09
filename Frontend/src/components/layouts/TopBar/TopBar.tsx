@@ -1,6 +1,8 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useTopBar } from "../../../hooks/useTopBar";
+import { bookService } from "../../../services/books";
+import type { Book } from "../../../types";
 import styles from "./TopBar.module.css";
 import logo from "/readly-logo.svg";
 
@@ -9,8 +11,12 @@ interface TopBarProps {
 }
 
 export const TopBar = ({ showNav = false }: TopBarProps) => {
+  const navigate = useNavigate();
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState<Book[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
 
   const {
     scrolled,
@@ -22,10 +28,46 @@ export const TopBar = ({ showNav = false }: TopBarProps) => {
     handleLogout,
   } = useTopBar();
 
-  const handleSearchBlur = () => {
-    if (searchQuery.trim() === "") {
-      setShowSearch(false);
-    }
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target as Node)
+      ) {
+        setSuggestions([]);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (searchQuery.length > 2) {
+        setIsSearching(true);
+        try {
+          const results = await bookService.searchBooks(searchQuery);
+          setSuggestions(results.slice(0, 5));
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setIsSearching(false);
+        }
+      } else {
+        setSuggestions([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
+
+  const handleSelectBook = (book: Book) => {
+    setSearchQuery("");
+    setSuggestions([]);
+    setShowSearch(false);
+    navigate(`/books/${encodeURIComponent(book.title)}`, {
+      state: { bookId: book.id },
+    });
   };
 
   const menuItems = [
@@ -72,24 +114,65 @@ export const TopBar = ({ showNav = false }: TopBarProps) => {
             </div>
 
             <div className="d-flex align-items-center gap-2">
-              <div className="d-flex align-items-center">
-                {showSearch && (
-                  <input
-                    type="text"
-                    className={`form-control border-0 shadow-none rounded-pill ${styles.searchInput}`}
-                    placeholder="Search books..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onBlur={handleSearchBlur}
-                    autoFocus
-                  />
+              <div className="position-relative" ref={searchContainerRef}>
+                <div className="d-flex align-items-center">
+                  {showSearch && (
+                    <input
+                      type="text"
+                      className={`form-control border-0 shadow-none rounded-pill ${styles.searchInput}`}
+                      placeholder="Search books..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      autoFocus
+                    />
+                  )}
+                  <button
+                    className={`btn p-0 border-0 shadow-none me-2 d-flex align-items-center justify-content-center ${styles.searchBtn}`}
+                    onClick={() => setShowSearch(!showSearch)}
+                  >
+                    <i
+                      className={`bi ${isSearching ? "bi-hourglass-split" : "bi-search"} fs-5`}
+                    ></i>
+                  </button>
+                </div>
+
+                {suggestions.length > 0 && (
+                  <ul
+                    className={`dropdown-menu show shadow-lg border-0 p-2 mt-2 ${styles.searchSuggestions}`}
+                  >
+                    {suggestions.map((book) => (
+                      <li key={book.id}>
+                        <button
+                          className="dropdown-item rounded-3 d-flex align-items-center gap-3 py-2"
+                          onClick={() => handleSelectBook(book)}
+                        >
+                          <img
+                            src={
+                              book.image_url?.replace("http://", "https://") ||
+                              ""
+                            }
+                            alt=""
+                            style={{
+                              width: "35px",
+                              height: "50px",
+                              objectFit: "cover",
+                              borderRadius: "4px",
+                            }}
+                          />
+                          <div className="text-truncate">
+                            <div
+                              className="fw-bold text-truncate"
+                              style={{ maxWidth: "200px" }}
+                            >
+                              {book.title}
+                            </div>
+                            <small className="text-muted">{book.author}</small>
+                          </div>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
                 )}
-                <button
-                  className={`btn p-0 border-0 shadow-none me-2 d-flex align-items-center justify-content-center ${styles.searchBtn}`}
-                  onClick={() => setShowSearch(!showSearch)}
-                >
-                  <i className="bi bi-search fs-5"></i>
-                </button>
               </div>
 
               <div className="dropdown" ref={dropdownRef}>

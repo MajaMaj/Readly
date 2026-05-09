@@ -108,4 +108,13 @@ class Shelf(BaseModel):
     name: str
     user_id: int
     books: list[BookInShelf] = []
+
+class ShelfBook(BaseModel):
+    id: int
+    shelf_id: int
+    book_id: str
+    title: str
+    author: str
+    image_url: Optional[str] = None
+
     model_config = ConfigDict(from_attributes=True)

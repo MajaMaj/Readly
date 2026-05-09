@@ -201,4 +201,18 @@ export const bookService = {
     const data: ApiReviewResponse[] = await res.json();
     return data.map(mapReviewData);
   },
+
+  searchBooks: async (query: string): Promise<Book[]> => {
+    const res = await fetch(
+      `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=5&key=${API_KEY}`
+    );
+
+    if (!res.ok) return [];
+
+    const data: { items?: GoogleBooksItem[] } = await res.json();
+
+    if (!data.items) return [];
+
+    return data.items.map(mapBookData);
+  },
 };
