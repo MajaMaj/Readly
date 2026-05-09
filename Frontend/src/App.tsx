@@ -15,6 +15,7 @@ import { ForgotPasswordPage } from "./views/ForgotPasswordPage";
 import { ForgotPasswordSuccessPage } from "./views/ForgotPasswordSuccessPage";
 import { ResetPasswordPage } from "./views/ResetPasswordPage";
 import { DiscoverPage } from "./views/DiscoverPage/DiscoverPage";
+import { BookDetailsPage } from "./views/BookDetailsPage";
 import { ShelvesPage } from "./views/ShelvesPage";
 import { ReviewsPage } from "./views/ReviewsPage";
 import { ProfilePage } from "./views/ProfilePage/ProfilePage";
@@ -57,6 +58,7 @@ export default function App() {
             <Route path="/dashboard/shelves" element={<ShelvesPage />} />
             <Route path="/dashboard/reviews" element={<ReviewsPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/books/:title" element={<BookDetailsPage />} />
           </Route>
         </Route>
 

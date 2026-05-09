@@ -1,6 +1,8 @@
-import type { Book } from "../types";
+import type { Book, Review, Shelf } from "../types";
 
 const API_KEY = import.meta.env.VITE_GOOGLE_BOOKS_API_KEY;
+const BASE_URL = "http://localhost:8000/api/books";
+const SHELVES_URL = "http://localhost:8000/api/shelves";
 
 interface GoogleBooksItem {
   id: string;
@@ -15,6 +17,7 @@ interface GoogleBooksItem {
       thumbnail?: string;
     };
     averageRating?: number;
+    description?: string;
   };
 }
 
@@ -31,7 +34,6 @@ const mapBookData = (item: GoogleBooksItem): Book => {
 
   if (coverUrl) {
     coverUrl = coverUrl.replace("http:", "https:").replace("&edge=curl", "");
-
     if (coverUrl.includes("zoom=1")) {
       coverUrl = coverUrl.replace("zoom=1", "zoom=3");
     }
@@ -48,34 +50,137 @@ const mapBookData = (item: GoogleBooksItem): Book => {
 
 export const bookService = {
   getTrendingBooks: async (): Promise<Book[]> => {
-    try {
-      const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=best+books+2024&maxResults=5&orderBy=relevance&key=${API_KEY}`
-      );
-
-      if (!response.ok) throw new Error(`API Error: ${response.status}`);
-      const data = await response.json();
-
-      return data.items ? data.items.map(mapBookData) : [];
-    } catch (error) {
-      console.error(error);
-      return [];
-    }
+    const res = await fetch(
+      `https://www.googleapis.com/books/v1/volumes?q=best+books+2024&maxResults=5&orderBy=relevance&key=${API_KEY}`
+    );
+    const data = await res.json();
+    return data.items ? data.items.map(mapBookData) : [];
   },
 
   getCategoryBooks: async (category: string): Promise<Book[]> => {
-    try {
-      const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=subject:${category}&maxResults=8&orderBy=newest&key=${API_KEY}`
-      );
+    const res = await fetch(
+      `https://www.googleapis.com/books/v1/volumes?q=subject:${category}&maxResults=8&orderBy=newest&key=${API_KEY}`
+    );
+    const data = await res.json();
+    return data.items ? data.items.map(mapBookData) : [];
+  },
 
-      if (!response.ok) throw new Error(`API Error: ${response.status}`);
-      const data = await response.json();
+  getBookDetails: async (id: string): Promise<Book> => {
+    const res = await fetch(
+      `https://www.googleapis.com/books/v1/volumes/${id}?key=${API_KEY}`
+    );
+    const data = await res.json();
+    const info = data.volumeInfo;
 
-      return data.items ? data.items.map(mapBookData) : [];
-    } catch (error) {
-      console.error(error);
-      return [];
-    }
+    return {
+      id: data.id,
+      title: info.title || "Unknown Title",
+      author: info.authors ? info.authors[0] : "Unknown Author",
+      image_url: info.imageLinks?.thumbnail?.replace("http:", "https:") || null,
+      rating: info.averageRating || 4.5,
+      description: info.description?.replace(/<[^>]*>/g, ""),
+    };
+  },
+
+  getReviews: async (bookId: string): Promise<Review[]> => {
+    const res = await fetch(`${BASE_URL}/${bookId}/reviews`);
+    const data = await res.json();
+
+    return data.map((item: any) => ({
+      id: item.id.toString(),
+      bookId: item.book_id,
+      userId: item.user_id,
+      username: item.username,
+      rating: item.rating,
+      content: item.content,
+      createdAt: item.created_at,
+    }));
+  },
+
+  addReview: async (bookId: string, review: any): Promise<Review> => {
+    const res = await fetch(`${BASE_URL}/${bookId}/reviews`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id: review.userId,
+        username: review.username,
+        rating: review.rating,
+        content: review.content,
+      }),
+    });
+
+    const item = await res.json();
+
+    return {
+      id: item.id.toString(),
+      bookId: item.book_id,
+      userId: item.user_id,
+      username: item.username,
+      rating: item.rating,
+      content: item.content,
+      createdAt: item.created_at,
+    };
+  },
+
+  updateReview: async (reviewId: string, review: any): Promise<Review> => {
+    const res = await fetch(`${BASE_URL}/reviews/${reviewId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(review),
+    });
+
+    const item = await res.json();
+
+    return {
+      id: item.id.toString(),
+      bookId: item.book_id,
+      userId: item.user_id,
+      username: item.username,
+      rating: item.rating,
+      content: item.content,
+      createdAt: item.created_at,
+    };
+  },
+
+  getShelves: async (userId: string): Promise<Shelf[]> => {
+    const res = await fetch(`${SHELVES_URL}/${userId}`);
+    return await res.json();
+  },
+
+  getShelf: async (shelfId: string): Promise<Shelf> => {
+    const res = await fetch(`${SHELVES_URL}/single/${shelfId}`);
+    return await res.json();
+  },
+
+  createShelf: async (name: string, userId: string): Promise<Shelf> => {
+    const res = await fetch(SHELVES_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, user_id: userId }),
+    });
+
+    return await res.json();
+  },
+
+  addBookToShelf: async (shelfId: string, book: Book) => {
+    await fetch(`${SHELVES_URL}/${shelfId}/books`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: book.title,
+        author: book.author,
+        image_url: book.image_url,
+        google_books_id: book.id,
+      }),
+    });
+  },
+
+  removeBookFromShelf: async (shelfId: string, bookId: string) => {
+    await fetch(
+      `http://localhost:8000/api/shelves/${shelfId}/books/${bookId}`,
+      {
+        method: "DELETE",
+      }
+    );
   },
 };

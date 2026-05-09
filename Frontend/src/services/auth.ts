@@ -21,8 +21,17 @@ export const authService = {
 
   login: async (data: LoginData) => {
     try {
+      sessionStorage.clear();
+
       const response = await axios.post(`${API_URL}/login`, data);
-      return response.data;
+
+      const userData = response.data;
+      if (userData && (userData.token || userData.access_token)) {
+        const token = userData.token || userData.access_token;
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      }
+
+      return userData;
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const serverError = err as AxiosError<ApiError>;
@@ -30,6 +39,13 @@ export const authService = {
       }
       throw new Error("An unexpected error occurred");
     }
+  },
+
+  logout: async () => {
+    // Metoda pomocnicza do czyszczenia wszystkiego
+    delete axios.defaults.headers.common["Authorization"];
+    sessionStorage.clear();
+    localStorage.clear();
   },
 
   forgotPassword: async (email: string) => {

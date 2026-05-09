@@ -38,11 +38,22 @@ def login(user: schemas.UserAuth, db: Session = Depends(get_db)):
     db_user = db.query(database.User).filter(
         or_(database.User.username == user.identifier, database.User.email == user.identifier)
     ).first()
-    if not db_user: 
-        raise HTTPException(status_code=404, detail="Account not found")
-    if db_user.password != user.password:
-        raise HTTPException(status_code=400, detail="Incorrect password")
-    return {"id": db_user.id, "username": db_user.username}
+    
+    if not db_user or db_user.password != user.password:
+        raise HTTPException(status_code=400, detail="Incorrect identifier or password")
+
+    # TWORZENIE TOKENA DLA ZALOGOWANEGO UŻYTKOWNIKA
+    access_token_expires = timedelta(minutes=60)
+    expire = datetime.now(timezone.utc) + access_token_expires
+    to_encode = {"sub": str(db_user.id), "exp": expire}
+    token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+    return {
+        "access_token": token, 
+        "token_type": "bearer", 
+        "id": db_user.id, 
+        "username": db_user.username
+    }
 
 @router.post("/forgot-password")
 async def forgot_password(data: schemas.ForgotPasswordRequest, db: Session = Depends(get_db)):

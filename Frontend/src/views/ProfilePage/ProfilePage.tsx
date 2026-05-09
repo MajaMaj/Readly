@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { userService } from "../../services/userService";
 import { FormTextarea } from "../../components/common/FormTextarea";
 import styles from "./ProfilePage.module.css";
@@ -11,6 +12,7 @@ interface User {
 }
 
 export const ProfilePage = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [passwords, setPasswords] = useState({ new: "", confirm: "" });
   const [description, setDescription] = useState("");
@@ -20,16 +22,18 @@ export const ProfilePage = () => {
   const [imgError, setImgError] = useState(false);
 
   const fetchUser = useCallback(async () => {
+    setLoading(true);
     try {
       const data = await userService.getMe();
       setUser(data);
       setDescription(data.description || "");
     } catch {
-      setStatus({ msg: "Failed to load profile data", type: "danger" });
+      sessionStorage.clear();
+      navigate("/login");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     fetchUser();
@@ -89,7 +93,7 @@ export const ProfilePage = () => {
   }
 
   return (
-    <div className={`${styles.profilePage} pt-5`}>
+    <div key={user.username} className={`${styles.profilePage} pt-5`}>
       <div
         className="toast-container position-fixed top-0 end-0 p-4 mt-5"
         style={{ zIndex: 1100 }}

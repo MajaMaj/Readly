@@ -1,34 +1,52 @@
-const BASE_URL = "http://localhost:8000";
-const API_URL = `${BASE_URL}/api/users`;
+import axios from "axios";
+
+const API_URL = "http://localhost:8000/api/users";
 
 export const userService = {
   getMe: async () => {
-    const res = await fetch(`${API_URL}/me`);
-    if (!res.ok) throw new Error("Failed to fetch user data");
-    return res.json();
+    // 1. Pobieramy aktualne dane z sesji bezpośrednio przed strzałem
+    const storedUser = sessionStorage.getItem("user");
+    if (!storedUser) throw new Error("No user in session");
+
+    const user = JSON.parse(storedUser);
+    const token = user.access_token || user.token;
+
+    // 2. Wysyłamy zapytanie, podając token ręcznie w nagłówku
+    const response = await axios.get(`${API_URL}/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  },
+
+  updateProfile: async (data: { description?: string; password?: string }) => {
+    const storedUser = sessionStorage.getItem("user");
+    const user = storedUser ? JSON.parse(storedUser) : null;
+    const token = user?.access_token || user?.token;
+
+    const response = await axios.put(`${API_URL}/me`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
   },
 
   uploadAvatar: async (file: File) => {
     const formData = new FormData();
     formData.append("file", file);
-    const res = await fetch(`${API_URL}/upload-avatar`, {
-      method: "POST",
-      body: formData,
-    });
-    if (!res.ok) throw new Error("Failed to upload avatar");
-    return res.json();
-  },
 
-  updateProfile: async (data: { description?: string; password?: string }) => {
-    const res = await fetch(`${API_URL}/update-profile`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        description: data.description,
-        new_password: data.password,
-      }),
+    const storedUser = sessionStorage.getItem("user");
+    const user = storedUser ? JSON.parse(storedUser) : null;
+    const token = user?.access_token || user?.token;
+
+    const response = await axios.post(`${API_URL}/me/avatar`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
     });
-    if (!res.ok) throw new Error("Failed to update profile");
-    return res.json();
+    return response.data;
   },
 };

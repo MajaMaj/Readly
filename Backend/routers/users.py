@@ -4,19 +4,20 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Request
 from sqlalchemy.orm import Session
 import database
 import schemas
+from auth import get_current_user_id
 
 router = APIRouter(prefix="/api/users", tags=["Users"])
 
 @router.get("/me", response_model=schemas.User)
-def get_current_user(db: Session = Depends(database.get_db)):
-    user = db.query(database.User).first()
+def get_me(user_id: int = Depends(get_current_user_id), db: Session = Depends(database.get_db)):
+    user = db.query(database.User).filter(database.User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
 @router.post("/upload-avatar")
-def upload_avatar(request: Request, file: UploadFile = File(...), db: Session = Depends(database.get_db)):
-    user = db.query(database.User).first()
+def upload_avatar(request: Request, file: UploadFile = File(...), user_id: int = Depends(get_current_user_id), db: Session = Depends(database.get_db)):
+    user = db.query(database.User).filter(database.User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
@@ -37,8 +38,8 @@ def upload_avatar(request: Request, file: UploadFile = File(...), db: Session = 
     return {"url": user.profile_image}
 
 @router.put("/update-profile")
-def update_profile(data: schemas.ProfileUpdate, db: Session = Depends(database.get_db)):
-    user = db.query(database.User).first()
+def update_profile(data: schemas.ProfileUpdate, user_id: int = Depends(get_current_user_id), db: Session = Depends(database.get_db)):
+    user = db.query(database.User).filter(database.User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
         

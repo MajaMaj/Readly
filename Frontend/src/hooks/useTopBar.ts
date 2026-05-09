@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 export const useTopBar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
 
   const location = useLocation();
-  const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,10 +30,10 @@ export const useTopBar = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
     sessionStorage.clear();
-    setShowDropdown(false);
-    navigate("/login");
+    localStorage.clear();
+
+    window.location.href = "/login";
   };
 
   const toggleDropdown = () => setShowDropdown((prev) => !prev);
