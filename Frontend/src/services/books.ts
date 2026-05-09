@@ -194,4 +194,11 @@ export const bookService = {
       method: "DELETE",
     });
   },
+
+  getUserReviews: async (userId: string): Promise<Review[]> => {
+    const res = await fetch(`${BASE_URL}/user/${userId}/reviews`);
+    if (!res.ok) return [];
+    const data: ApiReviewResponse[] = await res.json();
+    return data.map(mapReviewData);
+  },
 };

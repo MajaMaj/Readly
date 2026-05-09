@@ -29,3 +29,7 @@ def update_review(review_id: int, review_update: schemas.ReviewUpdate, db: Sessi
     db.refresh(db_review)
     return db_review
 
+@router.get("/user/{user_id}/reviews", response_model=list[schemas.Review])
+def get_user_reviews(user_id: str, db: Session = Depends(get_db)):
+    return db.query(database.Review).filter(database.Review.user_id == user_id).all()
+
