@@ -158,37 +158,48 @@ export const BookDetailsPage = () => {
           <i className="bi bi-arrow-left me-2"></i> Back
         </button>
 
-        <div className="row bg-white rounded-5 shadow-sm p-4 mb-5">
-          <div className="col-lg-4 text-center">
+        <div className="row bg-white rounded-5 shadow-sm p-4 mb-5 align-items-start">
+          <div className="col-lg-5 text-center">
             {!imageError && imageUrl ? (
               <img
                 src={imageUrl}
                 alt={book.title}
-                className="img-fluid rounded-4 shadow-sm"
-                style={{ maxHeight: 500, objectFit: "cover" }}
+                className="img-fluid rounded-4 shadow-sm w-100"
+                style={{
+                  maxHeight: "750px",
+                  objectFit: "contain",
+                  display: "block",
+                }}
                 onError={() => setImageError(true)}
               />
             ) : (
-              <div className="p-5 bg-light rounded-4">
+              <div
+                className="p-5 bg-light rounded-4 d-flex align-items-center justify-content-center"
+                style={{ minHeight: "500px" }}
+              >
                 <i className="bi bi-book fs-1 text-warning" />
               </div>
             )}
           </div>
 
-          <div className="col-lg-8 ps-lg-5">
-            <div className="d-flex justify-content-between">
+          <div className="col-lg-7 ps-lg-5 mt-4 mt-lg-0">
+            <div className="d-flex text-primary justify-content-between">
               <h1>{book.title}</h1>
               <button
-                className="btn rounded-circle"
+                className="btn rounded-circle d-flex align-items-center justify-content-center p-0 flex-shrink-0"
                 style={{
-                  width: 50,
-                  height: 50,
+                  width: "50px",
+                  height: "50px",
                   background: "var(--readly-gold)",
                   color: "#fff",
+                  border: "none",
                 }}
                 onClick={() => setIsShelfModalOpen(true)}
               >
-                <i className="bi bi-plus-lg" />
+                <i
+                  className="bi bi-plus-lg"
+                  style={{ fontSize: "1.5rem", lineHeight: 0 }}
+                />
               </button>
             </div>
             <h5 className="text-muted">by {book.author}</h5>
@@ -281,7 +292,7 @@ export const BookDetailsPage = () => {
                   <div key={r.id} className="p-3 mb-2 bg-light rounded-4">
                     <strong>{r.username}</strong>
                     <div>{renderStars(r.rating)}</div>
-                    <p className="mb-0 small text-secondary">{r.content}</p>
+                    <p className="mb-0 small">{r.content}</p>
                   </div>
                 ))
               : !userReview && (

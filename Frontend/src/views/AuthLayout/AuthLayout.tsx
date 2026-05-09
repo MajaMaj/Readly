@@ -57,7 +57,6 @@ export const AuthLayout = () => {
                   transition: transitionConfig.exit,
                 }}
               >
-                {/* Outlet renderuje LoginPage/RegisterPage */}
                 {outlet}
               </motion.div>
             </AnimatePresence>

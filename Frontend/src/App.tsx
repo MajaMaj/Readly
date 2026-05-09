@@ -20,6 +20,7 @@ import { ShelvesPage } from "./views/ShelvesPage";
 import { ReviewsPage } from "./views/ReviewsPage";
 import { ProfilePage } from "./views/ProfilePage/ProfilePage";
 import { ResetPasswordSuccessPage } from "./views/ResetPasswordSuccessPage";
+import { ShelfDetailsPage } from "./views/ShelfDetailsPage";
 
 export default function App() {
   return (
@@ -56,6 +57,10 @@ export default function App() {
           <Route element={<MainLayout />}>
             <Route path="/dashboard/discover" element={<DiscoverPage />} />
             <Route path="/dashboard/shelves" element={<ShelvesPage />} />
+            <Route
+              path="/dashboard/shelves/:shelfId"
+              element={<ShelfDetailsPage />}
+            />
             <Route path="/dashboard/reviews" element={<ReviewsPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/books/:title" element={<BookDetailsPage />} />

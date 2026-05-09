@@ -47,8 +47,10 @@ export const ShelfDetailsPage = () => {
                 className="col-6 col-md-4 col-lg-3"
                 style={{ cursor: "pointer" }}
                 onClick={() =>
-                  navigate(`/dashboard/book/${book.id}`, {
-                    state: { bookId: book.id },
+                  // ZMIANA: Nawigujemy po tytule, aby pasowało do /books/:title
+                  // Dodatkowo przekazujemy book_id w state, żeby BookDetailsPage wiedziało co pobrać
+                  navigate(`/books/${encodeURIComponent(book.title)}`, {
+                    state: { bookId: book.book_id || book.id },
                   })
                 }
               >
@@ -72,7 +74,7 @@ export const ShelfDetailsPage = () => {
             <div className="col-12 text-center py-5">
               <div className="bg-white p-5 rounded-5 shadow-sm">
                 <i className="bi bi-book-half fs-1 text-muted mb-3 d-block"></i>
-                <p className="text-muted">Ta półka jest jeszcze pusta.</p>
+                <p className="text-muted">This shelf is empty.</p>
               </div>
             </div>
           )}

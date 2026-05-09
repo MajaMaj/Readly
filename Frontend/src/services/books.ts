@@ -21,6 +21,28 @@ interface GoogleBooksItem {
   };
 }
 
+interface ApiReviewResponse {
+  id: number;
+  book_id: string;
+  user_id: string;
+  username: string;
+  rating: number;
+  content: string;
+  created_at: string;
+}
+
+interface CreateReviewDTO {
+  userId: string;
+  username: string;
+  rating: number;
+  content: string;
+}
+
+interface UpdateReviewDTO {
+  rating: number;
+  content: string;
+}
+
 const mapBookData = (item: GoogleBooksItem): Book => {
   const info = item.volumeInfo;
 
@@ -48,6 +70,16 @@ const mapBookData = (item: GoogleBooksItem): Book => {
   };
 };
 
+const mapReviewData = (item: ApiReviewResponse): Review => ({
+  id: item.id.toString(),
+  bookId: item.book_id,
+  userId: item.user_id,
+  username: item.username,
+  rating: item.rating,
+  content: item.content,
+  createdAt: item.created_at,
+});
+
 export const bookService = {
   getTrendingBooks: async (): Promise<Book[]> => {
     const res = await fetch(
@@ -69,7 +101,7 @@ export const bookService = {
     const res = await fetch(
       `https://www.googleapis.com/books/v1/volumes/${id}?key=${API_KEY}`
     );
-    const data = await res.json();
+    const data: GoogleBooksItem = await res.json();
     const info = data.volumeInfo;
 
     return {
@@ -84,20 +116,14 @@ export const bookService = {
 
   getReviews: async (bookId: string): Promise<Review[]> => {
     const res = await fetch(`${BASE_URL}/${bookId}/reviews`);
-    const data = await res.json();
-
-    return data.map((item: any) => ({
-      id: item.id.toString(),
-      bookId: item.book_id,
-      userId: item.user_id,
-      username: item.username,
-      rating: item.rating,
-      content: item.content,
-      createdAt: item.created_at,
-    }));
+    const data: ApiReviewResponse[] = await res.json();
+    return data.map(mapReviewData);
   },
 
-  addReview: async (bookId: string, review: any): Promise<Review> => {
+  addReview: async (
+    bookId: string,
+    review: CreateReviewDTO
+  ): Promise<Review> => {
     const res = await fetch(`${BASE_URL}/${bookId}/reviews`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -109,37 +135,22 @@ export const bookService = {
       }),
     });
 
-    const item = await res.json();
-
-    return {
-      id: item.id.toString(),
-      bookId: item.book_id,
-      userId: item.user_id,
-      username: item.username,
-      rating: item.rating,
-      content: item.content,
-      createdAt: item.created_at,
-    };
+    const item: ApiReviewResponse = await res.json();
+    return mapReviewData(item);
   },
 
-  updateReview: async (reviewId: string, review: any): Promise<Review> => {
+  updateReview: async (
+    reviewId: string,
+    review: UpdateReviewDTO
+  ): Promise<Review> => {
     const res = await fetch(`${BASE_URL}/reviews/${reviewId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(review),
     });
 
-    const item = await res.json();
-
-    return {
-      id: item.id.toString(),
-      bookId: item.book_id,
-      userId: item.user_id,
-      username: item.username,
-      rating: item.rating,
-      content: item.content,
-      createdAt: item.created_at,
-    };
+    const item: ApiReviewResponse = await res.json();
+    return mapReviewData(item);
   },
 
   getShelves: async (userId: string): Promise<Shelf[]> => {
@@ -162,7 +173,7 @@ export const bookService = {
     return await res.json();
   },
 
-  addBookToShelf: async (shelfId: string, book: Book) => {
+  addBookToShelf: async (shelfId: string, book: Book): Promise<void> => {
     await fetch(`${SHELVES_URL}/${shelfId}/books`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -175,12 +186,12 @@ export const bookService = {
     });
   },
 
-  removeBookFromShelf: async (shelfId: string, bookId: string) => {
-    await fetch(
-      `http://localhost:8000/api/shelves/${shelfId}/books/${bookId}`,
-      {
-        method: "DELETE",
-      }
-    );
+  removeBookFromShelf: async (
+    shelfId: string,
+    bookId: string
+  ): Promise<void> => {
+    await fetch(`${SHELVES_URL}/${shelfId}/books/${bookId}`, {
+      method: "DELETE",
+    });
   },
 };
