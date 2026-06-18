@@ -153,6 +153,15 @@ export const bookService = {
     return mapReviewData(item);
   },
 
+  deleteReview: async (reviewId: string): Promise<void> => {
+    const res = await fetch(`${BASE_URL}/reviews/${reviewId}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) {
+      throw new Error("Failed to delete review");
+    }
+  },
+
   getShelves: async (userId: string): Promise<Shelf[]> => {
     const res = await fetch(`${SHELVES_URL}/${userId}`);
     return await res.json();

@@ -101,6 +101,18 @@ export const BookDetailsPage = () => {
     }
   };
 
+  const handleDeleteReview = async (reviewId: string) => {
+    if (!window.confirm("Are you sure you want to delete your review?")) return;
+
+    try {
+      await bookService.deleteReview(reviewId);
+      setReviews((prev) => prev.filter((r) => r.id !== reviewId));
+    } catch (error) {
+      console.error(error);
+      alert("Review could not be deleted. Please try again.");
+    }
+  };
+
   const getStats = () => {
     const counts = [0, 0, 0, 0, 0];
     reviews.forEach((r) => {
@@ -272,18 +284,29 @@ export const BookDetailsPage = () => {
                     <div className="mb-1">{renderStars(userReview.rating)}</div>
                   </div>
 
-                  <button
-                    className="btn btn-outline-secondary btn-sm rounded-circle shadow-sm"
-                    style={{ width: "32px", height: "32px", padding: "0" }}
-                    onClick={() => {
-                      setEditingReview(userReview);
-                      setIsReviewModalOpen(true);
-                    }}
-                  >
-                    <i className="bi bi-pencil small"></i>
-                  </button>
+                  <div className="d-flex gap-2">
+                    <button
+                      className="btn btn-outline-secondary btn-sm rounded-circle shadow-sm"
+                      style={{ width: "32px", height: "32px", padding: "0" }}
+                      onClick={() => {
+                        setEditingReview(userReview);
+                        setIsReviewModalOpen(true);
+                      }}
+                    >
+                      <i className="bi bi-pencil small"></i>
+                    </button>
+                    <button
+                      className="btn btn-outline-danger btn-sm rounded-circle shadow-sm"
+                      style={{ width: "32px", height: "32px", padding: "0" }}
+                      onClick={() => handleDeleteReview(userReview.id)}
+                    >
+                      <i className="bi bi-trash small"></i>
+                    </button>
+                  </div>
                 </div>
-                <p className="mb-0 mt-2">{userReview.content}</p>
+                <p className="mb-0 mt-2" style={{ whiteSpace: "pre-line" }}>
+                  {userReview.content}
+                </p>
               </div>
             )}
 
@@ -292,7 +315,12 @@ export const BookDetailsPage = () => {
                   <div key={r.id} className="p-3 mb-2 bg-light rounded-4">
                     <strong>{r.username}</strong>
                     <div>{renderStars(r.rating)}</div>
-                    <p className="mb-0 small">{r.content}</p>
+                    <p
+                      className="mb-0 small"
+                      style={{ whiteSpace: "pre-line" }}
+                    >
+                      {r.content}
+                    </p>
                   </div>
                 ))
               : !userReview && (
