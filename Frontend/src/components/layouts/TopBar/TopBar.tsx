@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTopBar } from "../../../hooks/useTopBar";
 import { bookService } from "../../../services/books";
+import { userService } from "../../../services/userService";
 import type { Book } from "../../../types";
 import styles from "./TopBar.module.css";
 import logo from "/readly-logo.svg";
@@ -29,19 +30,27 @@ export const TopBar = ({ showNav = false }: TopBarProps) => {
     handleLogout,
   } = useTopBar();
 
-  const loadAvatar = () => {
-    const storedUser = sessionStorage.getItem("user");
-    if (storedUser) {
-      const parsed = JSON.parse(storedUser);
-      setAvatarUrl(parsed.user?.profile_image || parsed.profile_image || null);
+  const loadAvatar = async () => {
+    try {
+      const user = await userService.getMe();
+      setAvatarUrl(user.profile_image || null);
+    } catch {
+      setAvatarUrl(null);
     }
   };
 
   useEffect(() => {
     loadAvatar();
 
-    window.addEventListener("avatarUpdated", loadAvatar);
-    return () => window.removeEventListener("avatarUpdated", loadAvatar);
+    const handleAvatarUpdate = () => {
+      loadAvatar();
+    };
+
+    window.addEventListener("avatarUpdated", handleAvatarUpdate);
+
+    return () => {
+      window.removeEventListener("avatarUpdated", handleAvatarUpdate);
+    };
   }, []);
 
   useEffect(() => {
@@ -53,7 +62,9 @@ export const TopBar = ({ showNav = false }: TopBarProps) => {
         setSuggestions([]);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
@@ -61,6 +72,7 @@ export const TopBar = ({ showNav = false }: TopBarProps) => {
     const delayDebounceFn = setTimeout(async () => {
       if (searchQuery.length > 2) {
         setIsSearching(true);
+
         try {
           const results = await bookService.searchBooks(searchQuery);
           setSuggestions(results.slice(0, 5));
@@ -81,6 +93,7 @@ export const TopBar = ({ showNav = false }: TopBarProps) => {
     setSearchQuery("");
     setSuggestions([]);
     setShowSearch(false);
+
     navigate(`/books/${encodeURIComponent(book.title)}`, {
       state: { bookId: book.id },
     });
@@ -98,7 +111,9 @@ export const TopBar = ({ showNav = false }: TopBarProps) => {
 
   return (
     <nav
-      className={`${styles.navbar} ${scrolled ? styles.scrolled : ""} navbar fixed-top py-3`}
+      className={`${styles.navbar} ${
+        scrolled ? styles.scrolled : ""
+      } navbar fixed-top py-3`}
     >
       <div className="container d-flex align-items-center justify-content-between position-relative">
         <Link className="navbar-brand p-0 m-0" to="/dashboard/discover">
@@ -142,12 +157,15 @@ export const TopBar = ({ showNav = false }: TopBarProps) => {
                       autoFocus
                     />
                   )}
+
                   <button
                     className={`btn p-0 border-0 shadow-none me-2 d-flex align-items-center justify-content-center ${styles.searchBtn}`}
                     onClick={() => setShowSearch(!showSearch)}
                   >
                     <i
-                      className={`bi ${isSearching ? "bi-hourglass-split" : "bi-search"} fs-5`}
+                      className={`bi ${
+                        isSearching ? "bi-hourglass-split" : "bi-search"
+                      } fs-5`}
                     ></i>
                   </button>
                 </div>
@@ -196,7 +214,11 @@ export const TopBar = ({ showNav = false }: TopBarProps) => {
                   className={`${styles.userAvatar} dropdown-toggle border-0 d-flex align-items-center justify-content-center p-0 overflow-hidden`}
                   onClick={toggleDropdown}
                   role="button"
-                  style={{ width: "40px", height: "40px", borderRadius: "50%" }}
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "50%",
+                  }}
                 >
                   {avatarUrl ? (
                     <img
@@ -210,7 +232,9 @@ export const TopBar = ({ showNav = false }: TopBarProps) => {
                 </div>
 
                 <ul
-                  className={`dropdown-menu dropdown-menu-end shadow border-0 p-2 ${showDropdown ? "show" : ""} ${styles.customDropdown}`}
+                  className={`dropdown-menu dropdown-menu-end shadow border-0 p-2 ${
+                    showDropdown ? "show" : ""
+                  } ${styles.customDropdown}`}
                 >
                   <li>
                     <Link
@@ -218,18 +242,22 @@ export const TopBar = ({ showNav = false }: TopBarProps) => {
                       className="dropdown-item py-2 d-flex align-items-center"
                       onClick={closeDropdown}
                     >
-                      <i className="bi bi-person me-2 fs-5"></i> Profile
+                      <i className="bi bi-person me-2 fs-5"></i>
+                      Profile
                     </Link>
                   </li>
+
                   <li>
                     <hr className="dropdown-divider opacity-50" />
                   </li>
+
                   <li>
                     <button
                       className="dropdown-item py-2 text-danger d-flex align-items-center"
                       onClick={handleLogout}
                     >
-                      <i className="bi bi-box-arrow-right me-2 fs-5"></i> Logout
+                      <i className="bi bi-box-arrow-right me-2 fs-5"></i>
+                      Logout
                     </button>
                   </li>
                 </ul>
