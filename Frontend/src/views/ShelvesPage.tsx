@@ -23,10 +23,6 @@ export const ShelvesPage = () => {
       style={{ background: "var(--readly-gray)" }}
     >
       <div className="container py-5">
-        <h1 className="fw-bold mb-5" style={{ color: "var(--readly-primary)" }}>
-          My Shelves
-        </h1>
-
         <div className="row g-4">
           {shelves.map((shelf) => (
             <div key={shelf.id} className="col-md-4">

@@ -53,6 +53,15 @@ export const ProfilePage = () => {
       const { url } = await userService.uploadAvatar(file);
       setUser((prev) => (prev ? { ...prev, profile_image: url } : null));
       setImgError(false);
+
+      const storedUser = sessionStorage.getItem("user");
+      if (storedUser) {
+        const parsed = JSON.parse(storedUser);
+        parsed.user = { ...parsed.user, profile_image: url };
+        sessionStorage.setItem("user", JSON.stringify(parsed));
+        window.dispatchEvent(new Event("avatarUpdated"));
+      }
+
       setStatus({ msg: "Avatar updated successfully!", type: "success" });
     } catch {
       setStatus({ msg: "Upload failed.", type: "danger" });

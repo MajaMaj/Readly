@@ -16,6 +16,7 @@ export const TopBar = ({ showNav = false }: TopBarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Book[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -27,6 +28,21 @@ export const TopBar = ({ showNav = false }: TopBarProps) => {
     closeDropdown,
     handleLogout,
   } = useTopBar();
+
+  const loadAvatar = () => {
+    const storedUser = sessionStorage.getItem("user");
+    if (storedUser) {
+      const parsed = JSON.parse(storedUser);
+      setAvatarUrl(parsed.user?.profile_image || parsed.profile_image || null);
+    }
+  };
+
+  useEffect(() => {
+    loadAvatar();
+
+    window.addEventListener("avatarUpdated", loadAvatar);
+    return () => window.removeEventListener("avatarUpdated", loadAvatar);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -177,11 +193,20 @@ export const TopBar = ({ showNav = false }: TopBarProps) => {
 
               <div className="dropdown" ref={dropdownRef}>
                 <div
-                  className={`${styles.userAvatar} dropdown-toggle border-0 d-flex align-items-center justify-content-center`}
+                  className={`${styles.userAvatar} dropdown-toggle border-0 d-flex align-items-center justify-content-center p-0 overflow-hidden`}
                   onClick={toggleDropdown}
                   role="button"
+                  style={{ width: "40px", height: "40px", borderRadius: "50%" }}
                 >
-                  <i className="bi bi-person-fill"></i>
+                  {avatarUrl ? (
+                    <img
+                      src={avatarUrl}
+                      alt="User Avatar"
+                      className="w-100 h-100 object-fit-cover"
+                    />
+                  ) : (
+                    <i className="bi bi-person-fill"></i>
+                  )}
                 </div>
 
                 <ul

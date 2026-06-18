@@ -1,33 +1,46 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { bookService } from "../services/books";
-import type { Review, Book } from "../types";
+import { useParams, useNavigate } from "react-router-dom";
+import { bookService } from "../../services/books";
+import { userService } from "../../services/userService";
+import type { Book, Review } from "../../types";
+
+interface UserProfile {
+  id: number;
+  username: string;
+  description: string | null;
+  profile_image: string | null;
+}
 
 interface ReviewWithBook extends Review {
   bookDetails?: Book;
 }
 
-export const ReviewsPage = () => {
+export const UserProfilePage = () => {
+  const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
+
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [reviews, setReviews] = useState<ReviewWithBook[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const storedUser = sessionStorage.getItem("user");
-  const user = storedUser ? JSON.parse(storedUser) : null;
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    const loadReviews = async () => {
-      if (!user?.id) {
-        setLoading(false);
-        return;
-      }
+    const fetchProfileAndReviews = async () => {
+      if (!username) return;
 
       try {
         setLoading(true);
-        const data = await bookService.getUserReviews(String(user.id));
+        setError(false);
+
+        const userData = await userService.getUserProfile(username);
+        setProfile(userData);
+
+        const reviewsData = await bookService.getUserReviews(
+          String(userData.id)
+        );
 
         const enhancedReviews = await Promise.all(
-          data.map(async (rev) => {
+          reviewsData.map(async (rev) => {
             try {
               const bookDetails = await bookService.getBookDetails(rev.bookId);
               return { ...rev, bookDetails };
@@ -38,15 +51,16 @@ export const ReviewsPage = () => {
         );
 
         setReviews(enhancedReviews);
-      } catch (error) {
-        console.error(error);
+      } catch (err) {
+        console.error(err);
+        setError(true);
       } finally {
         setLoading(false);
       }
     };
 
-    loadReviews();
-  }, [user?.id]);
+    fetchProfileAndReviews();
+  }, [username]);
 
   const renderStars = (rating: number) =>
     Array.from({ length: 5 }).map((_, index) => (
@@ -70,12 +84,79 @@ export const ReviewsPage = () => {
     );
   }
 
+  if (error || !profile) {
+    return (
+      <div
+        className="min-vh-100 d-flex align-items-center justify-content-center"
+        style={{ background: "var(--readly-gray)" }}
+      >
+        <div className="text-center bg-white p-5 rounded-5 shadow-sm">
+          <i className="bi bi-exclamation-circle text-danger display-4 mb-3 d-block"></i>
+          <h4 className="fw-bold mb-3">User not found</h4>
+          <button
+            className="btn btn-primary rounded-pill px-4"
+            onClick={() => navigate(-1)}
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className="min-vh-100 py-5"
       style={{ background: "var(--readly-gray)" }}
     >
       <div className="container py-5">
+        <button
+          className="btn btn-link p-0 mb-4 text-decoration-none fw-bold text-primary"
+          onClick={() => navigate(-1)}
+        >
+          <i className="bi bi-arrow-left me-2"></i> Back
+        </button>
+
+        <div className="bg-white p-4 p-md-5 rounded-5 shadow-sm mb-5 text-center text-md-start">
+          <div className="row align-items-center g-4">
+            <div className="col-md-auto text-center">
+              {profile.profile_image ? (
+                <img
+                  src={profile.profile_image}
+                  alt={profile.username}
+                  className="rounded-circle object-fit-cover shadow-sm"
+                  style={{ width: "150px", height: "150px" }}
+                />
+              ) : (
+                <div
+                  className="rounded-circle bg-light d-flex align-items-center justify-content-center border mx-auto"
+                  style={{ width: "150px", height: "150px" }}
+                >
+                  <i className="bi bi-person text-secondary display-1"></i>
+                </div>
+              )}
+            </div>
+            <div className="col-md">
+              <h1
+                className="fw-bold mb-2"
+                style={{ color: "var(--readly-primary)" }}
+              >
+                {profile.username}
+              </h1>
+              <p
+                className="fs-5 text-muted mb-0"
+                style={{ whiteSpace: "pre-line" }}
+              >
+                {profile.description || "This user hasn't added a bio yet."}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <h4 className="fw-bold mb-4">
+          Reviews by {profile.username} ({reviews.length})
+        </h4>
+
         <div className="row g-4">
           {reviews.length > 0 ? (
             reviews.map((rev) => (
@@ -125,7 +206,10 @@ export const ReviewsPage = () => {
                           : ""}
                       </small>
                     </div>
-                    <p className="mb-0" style={{ fontStyle: "italic" }}>
+                    <p
+                      className="mb-0"
+                      style={{ fontStyle: "italic", whiteSpace: "pre-line" }}
+                    >
                       "{rev.content}"
                     </p>
                   </div>
@@ -138,7 +222,7 @@ export const ReviewsPage = () => {
               <div className="bg-white p-5 rounded-5 shadow-sm">
                 <i className="bi bi-chat-left-text fs-1 text-muted mb-3 d-block"></i>
                 <p className="text-muted mb-0">
-                  You haven't written any reviews yet.
+                  {profile.username} hasn't written any reviews yet.
                 </p>
               </div>
             </div>

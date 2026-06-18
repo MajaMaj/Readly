@@ -109,7 +109,7 @@ export const BookDetailsPage = () => {
       setReviews((prev) => prev.filter((r) => r.id !== reviewId));
     } catch (error) {
       console.error(error);
-      alert("Review could not be deleted. Please try again.");
+      alert("Nie udało się usunąć opinii.");
     }
   };
 
@@ -313,10 +313,19 @@ export const BookDetailsPage = () => {
             {otherReviews.length > 0
               ? otherReviews.map((r) => (
                   <div key={r.id} className="p-3 mb-2 bg-light rounded-4">
-                    <strong>{r.username}</strong>
-                    <div>{renderStars(r.rating)}</div>
+                    <strong
+                      onClick={() => navigate(`/user/${r.username}`)}
+                      style={{
+                        cursor: "pointer",
+                        color: "var(--readly-primary)",
+                      }}
+                      className="text-decoration-underline-hover"
+                    >
+                      {r.username}
+                    </strong>
+                    <div className="mt-1">{renderStars(r.rating)}</div>
                     <p
-                      className="mb-0 small"
+                      className="mb-0 small mt-2"
                       style={{ whiteSpace: "pre-line" }}
                     >
                       {r.content}

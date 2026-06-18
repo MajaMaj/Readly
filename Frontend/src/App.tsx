@@ -19,6 +19,7 @@ import { BookDetailsPage } from "./views/BookDetailsPage";
 import { ShelvesPage } from "./views/ShelvesPage";
 import { ReviewsPage } from "./views/ReviewsPage";
 import { ProfilePage } from "./views/ProfilePage/ProfilePage";
+import { UserProfilePage } from "./views/UserProfilePage/UserProfilePage";
 import { ResetPasswordSuccessPage } from "./views/ResetPasswordSuccessPage";
 import { ShelfDetailsPage } from "./views/ShelfDetailsPage";
 
@@ -63,6 +64,7 @@ export default function App() {
             />
             <Route path="/dashboard/reviews" element={<ReviewsPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/user/:username" element={<UserProfilePage />} />
             <Route path="/books/:title" element={<BookDetailsPage />} />
           </Route>
         </Route>

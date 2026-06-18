@@ -8,7 +8,7 @@ export const userService = {
     if (!storedUser) throw new Error("No user in session");
 
     const user = JSON.parse(storedUser);
-    const token = user.access_token || user.token;
+    const token = user.access_token || user.token || user.accessToken;
 
     const response = await axios.get(`${API_URL}/me`, {
       headers: {
@@ -21,7 +21,7 @@ export const userService = {
   updateProfile: async (data: { description?: string; password?: string }) => {
     const storedUser = sessionStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : null;
-    const token = user?.access_token || user?.token;
+    const token = user?.access_token || user?.token || user?.accessToken;
 
     const response = await axios.put(`${API_URL}/update-profile`, data, {
       headers: {
@@ -37,7 +37,7 @@ export const userService = {
 
     const storedUser = sessionStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : null;
-    const token = user?.access_token || user?.token;
+    const token = user?.access_token || user?.token || user?.accessToken;
 
     const response = await axios.post(`${API_URL}/upload-avatar`, formData, {
       headers: {
@@ -45,6 +45,11 @@ export const userService = {
         "Content-Type": "multipart/form-data",
       },
     });
+    return response.data;
+  },
+
+  getUserProfile: async (username: string) => {
+    const response = await axios.get(`${API_URL}/profile/${username}`);
     return response.data;
   },
 };
